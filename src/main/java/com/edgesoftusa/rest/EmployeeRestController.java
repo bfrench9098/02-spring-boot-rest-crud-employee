@@ -2,6 +2,8 @@ package com.edgesoftusa.rest;
 
 import com.edgesoftusa.entity.Employee;
 import com.edgesoftusa.service.EmployeeService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,11 +36,16 @@ public class EmployeeRestController {
     }
 
     // add mapping for POST /employees - add new employee
+    // receive inbound json payload
     @PostMapping("/employees")
-    public Employee addEmployee(@RequestBody Employee theEmployee) {
-        // also just in case they pass an id in JSON ... set id to 0
-        //   this is to force a save of new item ...
-
+    public Employee addEmployee(@RequestBody String theEmployeeJson) {
+        ObjectMapper mapper = new ObjectMapper();
+        Employee theEmployee = null;
+        try {
+            theEmployee = mapper.readValue(theEmployeeJson, Employee.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         theEmployee.setId(0);
         Employee dbEmployee = employeeService.save(theEmployee);
 
