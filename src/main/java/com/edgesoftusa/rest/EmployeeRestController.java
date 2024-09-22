@@ -54,7 +54,14 @@ public class EmployeeRestController {
 
     // add mapping for PUT /employees = update existing
     @PutMapping("/employees")
-    public Employee updateEmployee(@RequestBody Employee theEmployee) {
+    public Employee updateEmployee(@RequestBody String theEmployeeJson) {
+        ObjectMapper mapper = new ObjectMapper();
+        Employee theEmployee = null;
+        try {
+            theEmployee = mapper.readValue(theEmployeeJson, Employee.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
         Employee dbEmployee = employeeService.save(theEmployee);
 
         return dbEmployee;
